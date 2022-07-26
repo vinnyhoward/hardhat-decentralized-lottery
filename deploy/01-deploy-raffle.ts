@@ -17,6 +17,7 @@ const deployRaffle: DeployFunction = async function (hre: HardhatRuntimeEnvironm
     let vrfCoordinatorV2Address, subscriptionId
 
     if (developmentChains.includes(network.name)) {
+        console.log("development chain running")
         // create VRFV2 Subscription
         const vrfCoordinatorV2Mock = await ethers.getContract("VRFCoordinatorV2Mock")
         vrfCoordinatorV2Address = vrfCoordinatorV2Mock.address
@@ -34,24 +35,26 @@ const deployRaffle: DeployFunction = async function (hre: HardhatRuntimeEnvironm
         ? 1
         : VERIFICATION_BLOCK_CONFIRMATIONS
 
-    log("----------------------------------------------------")
+    log("----------------------------------")
+    console.log("address:", vrfCoordinatorV2Address)
     const args: any[] = [
         vrfCoordinatorV2Address,
-        subscriptionId,
-        networkConfig[network.config.chainId!]["gasLane"],
-        networkConfig[network.config.chainId!]["keepersUpdateInterval"],
         networkConfig[network.config.chainId!]["raffleEntranceFee"],
+        networkConfig[network.config.chainId!]["gasLane"],
+        subscriptionId,
         networkConfig[network.config.chainId!]["callbackGasLimit"],
+        networkConfig[network.config.chainId!]["keepersUpdateInterval"],
     ]
+    console.log("arguments:", args)
     const raffle = await deploy("Raffle", {
         from: deployer,
-        args: args,
+        args,
         log: true,
         waitConfirmations: waitBlockConfirmations,
     })
 
     // Verify the deployment
-    if (!developmentChains.includes(network.name) && process.env.ETHERSCAN_API_KEY) {
+    if (!developmentChains.includes(network.name) && process.env.ETHER_SCAN_API_KEY) {
         log("Verifying...")
         await verify(raffle.address, args)
     }
@@ -59,7 +62,7 @@ const deployRaffle: DeployFunction = async function (hre: HardhatRuntimeEnvironm
     log("Run Price Feed contract with command:")
     const networkName = network.name == "hardhat" ? "localhost" : network.name
     log(`yarn hardhat run scripts/enterRaffle.js --network ${networkName}`)
-    log("----------------------------------------------------")
+    log("----------------------------------")
 }
 export default deployRaffle
 deployRaffle.tags = ["all", "raffle"]
