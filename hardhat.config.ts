@@ -12,11 +12,11 @@ import { HardhatUserConfig } from "hardhat/config"
  * @type import('hardhat/config').HardhatUserConfig
  */
 
-const KOVAN_RPC_URL = process.env.KOVAN_RPC_URL || ""
 const RINKEBY_RPC_URL = process.env.RINKEBY_RPC_URL || ""
 const PRIVATE_KEY = process.env.PRIVATE_KEY || ""
-const ETHER_SCAN_API_KEY = process.env.ETHERSCAN_API_KEY || ""
-const COIN_MARKET_CAP_API_KEY = process.env.COINMARKETCAP_API_KEY || ""
+// const KOVAN_RPC_URL = process.env.KOVAN_RPC_URL || ""
+// const ETHER_SCAN_API_KEY = process.env.ETHERSCAN_API_KEY || ""
+// const COIN_MARKET_CAP_API_KEY = process.env.COINMARKETCAP_API_KEY || ""
 
 const config: HardhatUserConfig = {
     defaultNetwork: "hardhat",
@@ -45,6 +45,9 @@ const config: HardhatUserConfig = {
         outputFile: "gas-report.txt",
         noColors: true,
         // coinmarketcap: COIN_MARKET_CAP_API_KEY,
+    },
+    mocha: {
+        timeout: 200000,
     },
 }
 
