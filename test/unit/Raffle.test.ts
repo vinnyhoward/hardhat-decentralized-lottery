@@ -164,8 +164,10 @@ const { assert, expect } = chai
               })
 
               it("picks a winner, resets, and sends money", async () => {
-                  const additionalEntrances = 3
-                  const startingIndex = 1
+                  const additionalEntrances: number = 3
+                  const startingIndex: number = 1
+                  let winnerStartingBalance: BigNumber
+
                   for (let i = startingIndex; i < startingIndex + additionalEntrances; i++) {
                       const accountConnectedRaffle = raffle.connect(accounts[i])
                       await accountConnectedRaffle.enterRaffle({ value: raffleEntranceFee })
@@ -179,20 +181,22 @@ const { assert, expect } = chai
                           // assert throws an error if it fails, so we need to wrap
                           // it in a try/catch so that the promise returns event
                           // if it fails.
+
                           try {
                               // Now lets get the ending values...
                               const recentWinner = await raffle.getRecentWinner()
                               const raffleState = await raffle.getRaffleState()
-                              const winnerBalance = await accounts[2].getBalance()
+                              const winnerEndingBalance = await accounts[1].getBalance()
                               const endingTimeStamp = await raffle.getLatestTimestamp()
 
                               await expect(raffle.getPlayer(0)).to.be.reverted
 
-                              //   assert.equal(recentWinner.toString(), accounts[2].address)
-                              //   assert.equal(raffleState.toString(), "0")
+                              assert.equal(recentWinner.toString(), accounts[1].address)
+                              assert.equal(raffleState.toString(), "0")
+
                               //   assert.equal(
-                              //       winnerBalance.toString(),
-                              //       startingBalance
+                              //       winnerEndingBalance.toString(),
+                              //       winnerStartingBalance
                               //           .add(
                               //               raffleEntranceFee
                               //                   .mul(additionalEntrances)
@@ -200,7 +204,7 @@ const { assert, expect } = chai
                               //           )
                               //           .toString()
                               //   )
-                              //   assert.isTrue(endingTimeStamp > startingTimeStamp)
+                              assert.isTrue(endingTimeStamp > startingTimeStamp)
                               resolve()
                           } catch (e) {
                               reject(e)
@@ -209,7 +213,9 @@ const { assert, expect } = chai
 
                       const tx = await raffle.performUpkeep("0x")
                       const txReceipt = await tx.wait(1)
-                      const startingBalance = await accounts[2].getBalance()
+
+                      winnerStartingBalance = await accounts[1].getBalance()
+
                       await vrfCoordinatorV2.fulfillRandomWords(
                           txReceipt!.events![1].args!.requestId,
                           raffle.address
