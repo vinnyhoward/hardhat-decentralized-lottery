@@ -17,7 +17,7 @@ const PRIVATE_KEY = process.env.PRIVATE_KEY || ""
 const ETHER_SCAN_API_KEY = process.env.ETHER_SCAN_API_KEY || ""
 const COIN_MARKET_CAP_API_KEY = process.env.COINMARKETCAP_API_KEY || ""
 // const KOVAN_RPC_URL = process.env.KOVAN_RPC_URL || ""
-console.log("ETHER_SCAN_API_KEY:", ETHER_SCAN_API_KEY)
+
 const config: HardhatUserConfig = {
     defaultNetwork: "hardhat",
     networks: {
@@ -27,7 +27,7 @@ const config: HardhatUserConfig = {
         rinkeby: {
             chainId: 4,
             url: RINKEBY_RPC_URL,
-            accounts: PRIVATE_KEY !== undefined ? [PRIVATE_KEY] : [],
+            accounts: [PRIVATE_KEY],
         },
     },
     solidity: "0.8.9",

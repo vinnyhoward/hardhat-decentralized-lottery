@@ -10,9 +10,11 @@ developmentChains.includes(network.name)
           let raffle: Raffle
           let raffleEntranceFee: BigNumber
           let deployer: string
+
           beforeEach(async function () {
               deployer = (await getNamedAccounts()).deployer
               raffle = await ethers.getContract("Raffle", deployer)
+              console.log("deployer:", deployer)
               raffleEntranceFee = await raffle.getEntranceFee()
           })
 
@@ -52,6 +54,7 @@ developmentChains.includes(network.name)
                       })
                       // Then entering the raffle
                       console.log("Entering Raffle...")
+                      console.log("raffleEntranceFee:", raffleEntranceFee.toString())
                       const tx = await raffle.enterRaffle({
                           value: raffleEntranceFee,
                       })

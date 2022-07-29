@@ -23,13 +23,14 @@ const { assert, expect } = chai
           let player: SignerWithAddress
           let accounts: SignerWithAddress[]
           let interval: BigNumber
+          let gasCost: BigNumber
           const chainId: number = network.config.chainId!
 
           beforeEach(async function () {
               await deployments.fixture(["all"])
 
               accounts = await ethers.getSigners() // could also do with getNamedAccounts
-              player = accounts[1]
+              player = accounts[0]
               raffle = await ethers.getContract("Raffle", player)
               interval = await raffle.getInterval()
               vrfCoordinatorV2 = await ethers.getContract("VRFCoordinatorV2Mock", player)
@@ -51,9 +52,12 @@ const { assert, expect } = chai
               })
 
               it("records players when they enter", async function () {
-                  await raffle.enterRaffle({ value: raffleEntranceFee })
+                  const transactionResponse = await raffle.enterRaffle({ value: raffleEntranceFee })
+                  const transactionReceipt = await transactionResponse.wait(1)
                   const playerFromContract = await raffle.getPlayer(0)
-
+                  const { gasUsed, effectiveGasPrice } = transactionReceipt
+                  gasCost = gasUsed.mul(effectiveGasPrice)
+                  console.log("gasCost:", gasCost)
                   assert.equal(playerFromContract, player.address)
               })
 
@@ -194,16 +198,16 @@ const { assert, expect } = chai
                               assert.equal(recentWinner.toString(), accounts[1].address)
                               assert.equal(raffleState.toString(), "0")
 
-                              //   assert.equal(
-                              //       winnerEndingBalance.toString(),
-                              //       winnerStartingBalance
-                              //           .add(
-                              //               raffleEntranceFee
-                              //                   .mul(additionalEntrances)
-                              //                   .add(raffleEntranceFee)
-                              //           )
-                              //           .toString()
-                              //   )
+                              assert.equal(
+                                  winnerEndingBalance.toString(),
+                                  winnerStartingBalance
+                                      .add(
+                                          raffleEntranceFee
+                                              .mul(additionalEntrances)
+                                              .add(raffleEntranceFee)
+                                      )
+                                      .toString()
+                              )
                               assert.isTrue(endingTimeStamp > startingTimeStamp)
                               resolve()
                           } catch (e) {
