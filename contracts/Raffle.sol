@@ -89,7 +89,7 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
     /// @dev 4. Lottery should be in an "open" state
     function checkUpkeep(
         bytes memory /* checkData */
-    ) public override returns (bool upkeepNeeded, bytes memory performData) {
+    ) public view override returns (bool upkeepNeeded, bytes memory performData) {
         bool isOpen = (RaffleState.OPEN == s_raffleState);
         bool timePassed = (block.timestamp - s_lastTimestamp) > i_interval;
         bool hasPlayers = s_players.length > 0;
@@ -172,7 +172,7 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
         return s_players.length;
     }
 
-    function getLatestTimestamp() public view returns (uint256) {
+    function getLastTimestamp() public view returns (uint256) {
         return s_lastTimestamp;
     }
 

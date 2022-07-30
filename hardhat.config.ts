@@ -53,7 +53,7 @@ const config: HardhatUserConfig = {
         coinmarketcap: COIN_MARKET_CAP_API_KEY,
     },
     mocha: {
-        timeout: 200000,
+        timeout: 300000,
     },
 }
 
