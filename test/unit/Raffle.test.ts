@@ -176,7 +176,7 @@ const { assert, expect } = chai
                       const accountConnectedRaffle = raffle.connect(accounts[i])
                       await accountConnectedRaffle.enterRaffle({ value: raffleEntranceFee })
                   }
-                  const startingTimeStamp = await raffle.getLastTimestamp()
+                  const startingTimeStamp = await raffle.getLatestTimestamp()
 
                   // This will be more important for our staging tests...
                   await new Promise<void>(async (resolve, reject) => {
@@ -191,7 +191,7 @@ const { assert, expect } = chai
                               const recentWinner = await raffle.getRecentWinner()
                               const raffleState = await raffle.getRaffleState()
                               const winnerEndingBalance = await accounts[1].getBalance()
-                              const endingTimeStamp = await raffle.getLastTimestamp()
+                              const endingTimeStamp = await raffle.getLatestTimestamp()
 
                               await expect(raffle.getPlayer(0)).to.be.reverted
 
